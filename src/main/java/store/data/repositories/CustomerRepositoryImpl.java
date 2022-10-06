@@ -28,6 +28,14 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
+    public Customer findByEmail(String email) {
+        for (Customer customer:customers) {
+            if (customer.getEmail().equals(email)) return customer;
+        }
+        throw new StoreException("customer not found");
+    }
+
+    @Override
     public List<Customer> findAll() {
         return customers;
     }

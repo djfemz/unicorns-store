@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import store.data.dto.AddProductRequest;
 import store.data.dto.AddProductResponse;
+import store.data.models.Product;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,5 +33,11 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void getProductByIdTest(){}
+    void getProductByIdTest(){
+        AddProductResponse response =
+                productService.addProduct(addProductRequest);
+        Product foundProduct =
+                productService.getProductById(response.getProductId());
+        assertNotNull(foundProduct);
+    }
 }
