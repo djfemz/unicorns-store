@@ -1,23 +1,23 @@
 package store.service;
 
-import store.data.dto.BuyerRegistrationRequest;
-import store.data.dto.BuyerRegistrationResponse;
+import store.data.dto.CustomerRegistrationRequest;
+import store.data.dto.CustomerRegistrationResponse;
 import store.data.dto.ProductPurchaseRequest;
-import store.data.models.Buyer;
-import store.data.repositories.BuyerRepository;
-import store.data.repositories.BuyerRepositoryImpl;
+import store.data.models.Customer;
+import store.data.repositories.CustomerRepository;
+import store.data.repositories.CustomerRepositoryImpl;
 import store.exceptions.BuyerRegistrationException;
 import store.utils.validators.UserDetailsValidator;
 
 import java.util.Set;
 
-public class BuyerServiceImpl implements BuyerService{
+public class CustomerServiceImpl implements CustomerService {
 
-    private final BuyerRepository buyerRepository = new BuyerRepositoryImpl();
+    private final CustomerRepository customerRepository = new CustomerRepositoryImpl();
     private final ProductService productService = new ProductServiceImpl();
 
     @Override
-    public BuyerRegistrationResponse register(BuyerRegistrationRequest registrationRequest) {
+    public CustomerRegistrationResponse register(CustomerRegistrationRequest registrationRequest) {
         //validate registration email
         if (!UserDetailsValidator.isValidEmailAddress(registrationRequest.getEmail()))
             throw new BuyerRegistrationException(String
@@ -32,33 +32,33 @@ public class BuyerServiceImpl implements BuyerService{
             throw new BuyerRegistrationException(String
                     .format("password %s is weak", registrationRequest.getPassword()));
         //create buyer
-        Buyer buyer = buildBuyer(registrationRequest);
+        Customer customer = buildBuyer(registrationRequest);
         //save buyer
-        Buyer savedBuyer = buyerRepository.save(buyer);
+        Customer savedCustomer = customerRepository.save(customer);
         //create registration response object
-        BuyerRegistrationResponse response =
-                buildBuyerRegistrationResponse(savedBuyer);
+        CustomerRegistrationResponse response =
+                buildBuyerRegistrationResponse(savedCustomer);
         return response;
     }
 
 
 
-    private BuyerRegistrationResponse buildBuyerRegistrationResponse(Buyer savedBuyer) {
-        BuyerRegistrationResponse response = new BuyerRegistrationResponse();
+    private CustomerRegistrationResponse buildBuyerRegistrationResponse(Customer savedCustomer) {
+        CustomerRegistrationResponse response = new CustomerRegistrationResponse();
         response.setMessage("user registration successful");
         response.setStatusCode(201);
-        response.setUserId(savedBuyer.getId());
+        response.setUserId(savedCustomer.getId());
         return response;
     }
 
-    private Buyer buildBuyer(BuyerRegistrationRequest registrationRequest) {
-        Buyer buyer = new Buyer();
-        buyer.setEmail(registrationRequest.getEmail());
-        buyer.setPassword(registrationRequest.getPassword());
-        Set<String> buyersAddressList = buyer.getDeliveryAddresses();
+    private Customer buildBuyer(CustomerRegistrationRequest registrationRequest) {
+        Customer customer = new Customer();
+        customer.setEmail(registrationRequest.getEmail());
+        customer.setPassword(registrationRequest.getPassword());
+        Set<String> buyersAddressList = customer.getDeliveryAddresses();
         buyersAddressList.add(registrationRequest.getAddress());
-        buyer.setPhoneNumber(registrationRequest.getPhoneNumber());
-        return buyer;
+        customer.setPhoneNumber(registrationRequest.getPhoneNumber());
+        return customer;
     }
 
     @Override

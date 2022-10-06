@@ -29,4 +29,9 @@ public class ProductServiceImpl implements ProductService{
         response.setStatusCode(201);
         return response;
     }
+
+    @Override
+    public Product getProductById(int id) {
+        return null;
+    }
 }

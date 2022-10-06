@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @Data
-public class Buyer extends User{
+public class Customer extends User{
     private int id;
     private String firstname;
     private String lastname;

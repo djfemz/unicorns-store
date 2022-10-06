@@ -30,4 +30,7 @@ class ProductServiceImplTest {
         assertNotNull(response.getMessage());
         assertEquals(1, response.getProductId());
     }
+
+    @Test
+    void getProductByIdTest(){}
 }

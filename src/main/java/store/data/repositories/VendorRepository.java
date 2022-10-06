@@ -1,6 +1,5 @@
 package store.data.repositories;
 
-import store.data.models.Buyer;
 import store.data.models.Vendor;
 
 import java.util.List;

@@ -3,7 +3,7 @@ package store.data.dto;
 import lombok.Data;
 
 @Data
-public class BuyerRegistrationRequest {
+public class CustomerRegistrationRequest {
     private String email;
     private String password;
     private String phoneNumber;

@@ -5,40 +5,42 @@ import store.exceptions.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProductRepositoryImpl implements ProductRepository{
 
-    private final List<Product> productDb = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
 
     @Override
     public Product save(Product product) {
-        product.setId(generateId());
-        productDb.add(product);
+        int newId = generateId();
+        product.setId(newId);
+        products.add(product);
         return product;
+    }
+
+    private int generateId(){
+        int listSize = products.size();
+        int newId = listSize+1;
+        return newId;
     }
 
     @Override
     public Product findById(int id) {
-        return productDb.stream()
-                .filter(product -> product.getId()==id)
-                .collect(Collectors.toSet())
-                .stream().findFirst().orElseThrow(()->new
-                        ProductNotFoundException(String.format("product with id %d not found", id)));
+        for (Product product:products) {
+            if (product.getId()==id) return product;
+        }
+        throw new ProductNotFoundException(
+                String.format("product with id %d doesn't exist", id)
+        );
     }
 
     @Override
     public List<Product> findAll() {
-        return productDb;
+        return products;
     }
 
     @Override
     public void delete(Product product) {
-        productDb.remove(product);
+        products.remove(product);
     }
-    private int generateId(){
-        return productDb.size()+1;
-    }
-
-
 }
