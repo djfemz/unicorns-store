@@ -2,6 +2,7 @@ package store.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import store.data.dto.AddProductRequest;
 import store.data.dto.CustomerRegistrationRequest;
 import store.data.dto.CustomerRegistrationResponse;
@@ -12,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CustomerServiceImplTest {
 
-    private final CustomerService customerService =
-            new CustomerServiceImpl();
-    private final ProductService productService=
-            new ProductServiceImpl();
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private ProductService productService;
 
     private CustomerRegistrationRequest firstBuyerRegisterRequest;
     private CustomerRegistrationRequest secondBuyerRegisterRequest;

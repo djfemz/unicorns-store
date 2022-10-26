@@ -7,6 +7,7 @@ public class UserDetailsValidator {
     }
 
     public static boolean isValidPhoneNumber(String phoneNumber) {
+
         return phoneNumber.length()==11;
     }
 

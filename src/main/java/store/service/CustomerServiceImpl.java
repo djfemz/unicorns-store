@@ -1,20 +1,26 @@
 package store.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import store.data.dto.*;
 import store.data.models.Customer;
 import store.data.models.Product;
 import store.data.repositories.CustomerRepository;
-import store.data.repositories.CustomerRepositoryImpl;
 import store.exceptions.BuyerRegistrationException;
 import store.exceptions.StoreException;
 import store.utils.validators.UserDetailsValidator;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+@Component
 public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerRepository customerRepository = new CustomerRepositoryImpl();
-    private final ProductService productService = new ProductServiceImpl();
+    @Autowired
+    private  CustomerRepository customerRepository;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public CustomerRegistrationResponse register(CustomerRegistrationRequest registrationRequest) {
@@ -22,15 +28,15 @@ public class CustomerServiceImpl implements CustomerService {
         if (!UserDetailsValidator.isValidEmailAddress(registrationRequest.getEmail()))
             throw new BuyerRegistrationException(String
                     .format("email %s is invalid", registrationRequest.getEmail()));
-        //validate buyer registration phone number
+        //validate buyer password
         if (!UserDetailsValidator.isValidPassword(registrationRequest.getPassword()))
             throw new BuyerRegistrationException(String
-                    .format("password %s is invalid", registrationRequest.getPhoneNumber()));
+                    .format("password %s is invalid", registrationRequest.getPassword()));
 
-        //validate buyer password
+        //validate buyer registration phone number
         if (!UserDetailsValidator.isValidPhoneNumber(registrationRequest.getPhoneNumber()))
             throw new BuyerRegistrationException(String
-                    .format("phone number %s is weak", registrationRequest.getPassword()));
+                    .format("phone number %s not valid", registrationRequest.getPhoneNumber()));
         //create buyer
         Customer customer = buildBuyer(registrationRequest);
         //save buyer
@@ -45,7 +51,9 @@ public class CustomerServiceImpl implements CustomerService {
     public LoginResponse login(LoginRequest loginRequest) {
         //check the db for a customer with email that is the same as email in login request
         Customer foundCustomer =
-                customerRepository.findByEmail(loginRequest.getEmail());
+                customerRepository.findByEmail(loginRequest.getEmail())
+                        .orElseThrow(()->new RuntimeException("Oops!!"));
+
         LoginResponse loginResponse = new LoginResponse();
         //compare password of found customer to password in login request
         if (foundCustomer.getPassword().equals(loginRequest.getPassword())){
@@ -54,6 +62,11 @@ public class CustomerServiceImpl implements CustomerService {
         }
         loginResponse.setMessage("authentication failed");
         return loginResponse;
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
     }
 
 
@@ -78,7 +91,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public String orderProduct(ProductPurchaseRequest productPurchaseRequest) {
         Customer customer =
-                customerRepository.findById(productPurchaseRequest.getCustomerId());
+                customerRepository.findById(productPurchaseRequest
+                        .getCustomerId())
+                        .orElseThrow(()->new RuntimeException("customer not found"));
         //search for product
         Product product =
                 productService.getProductById(productPurchaseRequest.getProductId());
@@ -86,6 +101,8 @@ public class CustomerServiceImpl implements CustomerService {
         //validate quantity
         if (product.getQuantity()>= productPurchaseRequest.getQuantity()){
             customer.getOrders().add(product);
+            product.setQuantity(product.getQuantity()-productPurchaseRequest.getQuantity());
+            productService.save(product);
             customerRepository.save(customer);
             return "order successful";
         }else{

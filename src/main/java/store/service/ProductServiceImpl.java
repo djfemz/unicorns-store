@@ -1,18 +1,24 @@
 package store.service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import store.data.dto.AddProductRequest;
 import store.data.dto.AddProductResponse;
 import store.data.models.Category;
 import store.data.models.Product;
 import store.data.repositories.ProductRepository;
-import store.data.repositories.ProductRepositoryImpl;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+@AllArgsConstructor
+@Component
 public class ProductServiceImpl implements ProductService{
+    @Autowired
+    private ProductRepository productRepository;
 
-    private final ProductRepository productRepository
-            = new ProductRepositoryImpl();
 
     @Override
     public AddProductResponse addProduct(AddProductRequest addProductRequest) {
@@ -32,6 +38,14 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product getProductById(int id) {
-        return productRepository.findById(id);
+        Product foundProduct = productRepository
+                .findById(id)
+                .orElseThrow(()->new RuntimeException("Oops!!"));
+        return foundProduct;
+    }
+
+    @Override
+    public Product save(Product product) {
+        return productRepository.save(product);
     }
 }

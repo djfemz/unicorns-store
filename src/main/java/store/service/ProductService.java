@@ -7,4 +7,6 @@ import store.data.models.Product;
 public interface ProductService {
     AddProductResponse addProduct(AddProductRequest addProductRequest);
     Product getProductById(int id);
+
+    Product save(Product product);
 }
